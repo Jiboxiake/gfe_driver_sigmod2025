@@ -6,7 +6,7 @@ GFE Driver
 
 The GFE (Graph Framework Evaluation) Driver is the program used to run the experiments in "GTX: A  Write-Optimized Latch-free Graph Data System with Transactional Support", measuring the throughput of updates in libraries supporting structural dynamic graphs and the completion times of 
 the [Graphalytics kernels](https://github.com/ldbc/ldbc_graphalytics) concurrently. 
-The driver supports the following systems: [GTX](https://github.com/Jiboxiake/GTX), [Sortledton](https://gitlab.db.in.tum.de/per.fuchs/sortledton), [Teseo](https://github.com/cwida/teseo), 
+The driver supports the following systems: [GTX](https://anonymous.4open.science/r/gfe_driver_sigmod2025-1387/README.md), [Sortledton](https://gitlab.db.in.tum.de/per.fuchs/sortledton), [Teseo](https://github.com/cwida/teseo), 
 [LLAMA](https://github.com/goatdb/llama), [GraphOne](https://github.com/the-data-lab/GraphOne), 
 [Stinger](http://stingergraph.com/) and [LiveGraph](https://github.com/thu-pacman/LiveGraph-Binary) while we ran our experiments only for systems that support concurrent reads and writes under transactions (GTX, Sortledton, Teseo, and LiveGraph).
 It can run four kinds of experiments: insert all edges in a random permuted order or timestamp-based order from an input graph, execute the updates specified by a [graphlog file](https://github.com/whatsthecraic/graphlog), run the kernels of the Graphalytics suite: BFS, PageRank (PR), weighted shortest paths (SSSP), and concurrently execute updates and graph analytics.  
@@ -86,7 +86,7 @@ mkdir build && cd build
 ```
 
 #### GTX
-Currently we use the branch 'master' from 'https://github.com/Jiboxiake/GTX' .
+Currently we use the branch 'master' from 'https://anonymous.4open.science/r/gfe_driver_sigmod2025-1387/README.md' .
 Follow the instruction in REAME to build GTX. After GTX has been built, configure the driver with:
 ```
 mkdir build && cd build
