@@ -1,0 +1,285 @@
+#############################################################################
+# Autoconf variables
+
+# builddir: where to build the final artifacts
+builddir := .
+# objectdir: container of the objects
+objectdir := objects
+
+# Current position
+srcdir := @srcdir@
+VPATH := @srcdir@
+top_srcdir := @top_srcdir@
+subdirs := @subdirs@ 
+
+# Compiler programs & flags
+# !!! It assumes that ${top_srcdir} has been defined in the container file !!!
+AR := ar
+AR_FLAGS := rcsPT
+CC := @CC@
+CXX := @CXX@
+CPPFLAGS := @CPPFLAGS@ 
+EXTRA_CPPFLAGS := @EXTRA_CPPFLAGS@ # extra flags defined by autoconf, similar to AM_CPPFLAGS
+SRC_CPPFLAGS := -I@top_srcdir@/ -I@top_srcdir@/third-party/libcommon/include/lib/
+ALL_CPPFLAGS := ${CPPFLAGS} ${EXTRA_CPPFLAGS} ${SRC_CPPFLAGS}
+CFLAGS := @CFLAGS@ 
+EXTRA_CFLAGS := @EXTRA_CFLAGS@ # extra flags defined by autoconf, similar to AM_CFLAGS
+ALL_CFLAGS := ${ALL_CPPFLAGS} ${EXTRA_CFLAGS} ${CFLAGS}
+CXXFLAGS := @CXXFLAGS@
+EXTRA_CXXFLAGS := @EXTRA_CXXFLAGS@ # extra flags defined by autoconf, similar to AM_CXXFLAGS
+ALL_CXXFLAGS := ${ALL_CPPFLAGS} ${EXTRA_CXXFLAGS} ${CXXFLAGS}
+
+# Dependencies
+subdirs := @subdirs_extra@
+libcommon := third-party/libcommon/obj/libcommon.a
+libbacktrace := third-party/libcommon/lib/backtrace/lib/libbacktrace.a
+archive := libgrapheval.a
+dependencies := ${archive} ${libcommon} ${libbacktrace}
+dependencies_cmake_flags := -DCMAKE_CXX_COMPILER="$(firstword ${CXX})" $(if $(filter -stdlib=libc++, ${CXX}),-DCMAKE_CXX_FLAGS="-stdlib=libc++")
+toolsdir := ${objectdir}/tools
+
+# Linker
+LDFLAGS := @LDFLAGS@
+
+#############################################################################
+# List of the sources to compile
+sources := \
+	experiment/details/aging2_master.cpp \
+	experiment/details/aging2_worker.cpp \
+	experiment/details/async_batch.cpp \
+	experiment/details/build_thread.cpp \
+	experiment/details/latency.cpp \
+	experiment/aging2_experiment.cpp \
+	experiment/aging2_result.cpp \
+	experiment/graphalytics.cpp \
+	experiment/insert_only.cpp \
+	experiment/statistics.cpp \
+	experiment/validate.cpp \
+	experiment/mixed_workload.cpp \
+    experiment/mixed_workload_result.cpp \
+	graph/cbytearray.cpp \
+	graph/edge.cpp \
+	graph/edge_stream.cpp \
+	graph/vertex_list.cpp \
+	library/interface.cpp \
+	library/baseline/adjacency_list.cpp \
+	library/baseline/csr.cpp \
+	library/baseline/dummy.cpp \
+	network/client.cpp \
+	network/internal.cpp \
+	network/message.cpp \
+	network/server.cpp \
+	reader/dimacs9_reader.cpp \
+	reader/format.cpp \
+	reader/graphalytics_reader.cpp \
+	reader/graphlog_reader.cpp \
+	reader/metis_reader.cpp \
+	reader/binary_reader.cpp \
+	reader/plain_reader.cpp \
+	reader/reader.cpp \
+	reader/utility.cpp \
+	utility/graphalytics_validate.cpp \
+	utility/memory_usage.cpp \
+	utility/timeout_service.cpp \
+	configuration.cpp \
+	main_driver.cpp
+
+ifneq (,$(findstring -DHAVE_STINGER,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/stinger/, community_detection.cpp connected_components.cpp local_clustering_coefficient.cpp pagerank.cpp shortest_paths.cpp stinger_ref.cpp stinger_unsafe.cpp)
+	sources += $(addprefix library/stinger-dv/, stinger-dv.cpp)
+endif
+ifneq (,$(findstring -DHAVE_LLAMA,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/llama/, llama_bfs.cpp llama_class.cpp llama_cdlp.cpp llama_internal.cpp llama_lcc.cpp llama_pagerank.cpp llama_ref.cpp llama_sssp.cpp llama_wcc.cpp)
+	sources += $(addprefix library/llama-dv/, llama-dv.cpp)
+endif
+ifneq (,$(findstring -DHAVE_GRAPHONE,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/graphone/, graphone.cpp)
+endif
+ifneq (,$(findstring -DHAVE_TESEO,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/teseo/, teseo_driver.cpp teseo_openmp.cpp teseo_real_vtx.cpp)
+endif
+ifneq (,$(findstring -DHAVE_LIVEGRAPH,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/livegraph/, livegraph_driver.cpp)
+endif
+ifneq (,$(findstring -DHAVE_SORTLEDTON,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/sortledton/, sortledton_driver.cpp)
+endif
+
+ifneq (,$(findstring -DHAVE_SORTLEDTONV2,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/sortledton_v2/, sortledton_driver_v2.cpp)
+endif
+
+ifneq (,$(findstring -DHAVE_GTX,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/gtx/, gtx_driver.cpp)
+endif
+
+ifneq (,$(findstring -DHAVE_MICROBENCHMARKS,${ALL_CPPFLAGS}))
+	sources += $(addprefix library/microbenchmarks/, microbenchmarks_driver.cpp)
+endif
+
+
+#############################################################################
+# Helper variables
+makedepend_c = @$(CC) -MM $(ALL_CFLAGS) -MP -MT $@ -MF $(basename $@).d $<
+makedepend_cxx = @$(CXX) -MM $(ALL_CXXFLAGS) -MP -MT $@ -MF $(basename $@).d $<
+# Library objects
+objectdirs := $(patsubst %./, %, $(sort $(addprefix ${objectdir}/, $(dir ${sources}))))
+objects_c := $(addprefix ${objectdir}/, $(patsubst %.c, %.o, $(filter %.c, ${sources})))
+objects_cxx := $(addprefix ${objectdir}/, $(patsubst %.cpp, %.o, $(filter %.cpp, ${sources})))
+objects := $(filter-out ${objectdir}/main_%.o, ${objects_c} ${objects_cxx})
+
+.DEFAULT_GOAL = all
+.PHONY: all
+
+all: ${builddir}/gfe_driver ${builddir}/gfe_memory_profiler.so
+
+#############################################################################
+# Artifacts to build
+${builddir}/gfe_driver: ${objectdir}/main_driver.o ${dependencies} | ${builddir}
+	${CXX} $^ ${LDFLAGS} -o $@
+
+#############################################################################
+# Compiling the objects
+${archive}: ${objects}
+	$(AR) $(AR_FLAGS) $@ $?
+
+# Objects from C files
+${objects_c} : ${objectdir}/%.o : %.c | ${objectdirs}
+	${makedepend_c}
+	${CC} -c ${ALL_CFLAGS} $< -o $@
+
+# Objects from C++ files
+${objects_cxx}: ${objectdir}/%.o : %.cpp | ${objectdirs}
+	${makedepend_cxx}
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@
+
+#############################################################################
+# Tests
+gtestdir := $(abspath ${builddir}/third-party/googletest)
+gtestlibs := $(addprefix ${gtestdir}/googlemock/gtest/,libgtest.a libgtest_main.a)
+testfolder := tests
+testsources := $(notdir $(wildcard ${srcdir}/${testfolder}/*.cpp))
+testbindir := $(abspath ${builddir}/${testfolder})
+testgraphs := ${testbindir}/graphs
+testartifacts := $(addprefix tests/, $(basename ${testsources}))
+testignored := "" # space separated list
+
+.PHONY: check gtest_build
+check: ${testartifacts}
+	success=1; \
+	for f in `ls ${testbindir}`; do \
+		f="${testbindir}/$$f"; \
+		b=`basename $$f`; \
+		for igntest in "${testignored}"; do \
+			igntest="$$(echo -e "$${igntest}" | tr -d '[:space:]')"; \
+			if [ x"$$igntest" == x"$$b" ]; then \
+				echo "Test blacklisted and ignored: $$f"; \
+				continue 2; \
+			fi; \
+		done; \
+		if [ -x "$$f" -a -f "$$f" ]; then \
+			echo "> Executing $$f ..."; \
+			$$f; \
+			if [ "$$?" -ne 0 ]; then \
+				echo "Test $$b failed. Avoiding running further tests."; \
+				success=0; \
+				break; \
+			fi; \
+		fi; \
+	done; \
+	if [ $$success -eq 1 ]; then \
+		echo "!!! All tests passed !!!"; \
+	fi;
+
+${testartifacts}: ${dependencies} | ${gtestlibs}
+${testartifacts}: % : %.cpp | ${testbindir} ${testgraphs}
+	${CXX} $(ALL_CXXFLAGS) -I ${srcdir}/third-party/googletest/googletest/include $< ${dependencies} ${gtestlibs} ${LDFLAGS} -o $@
+
+${gtestlibs}: ${gtestdir}
+${gtestdir}:
+	mkdir -pv ${gtestdir}
+	cmake -S ${srcdir}/third-party/googletest/ ${dependencies_cmake_flags} -B ${gtestdir}
+	make -C ${gtestdir} -j
+	
+${testgraphs}: | ${testbindir}
+	ln -s $(abspath ${srcdir})/tests/graphs $@
+	
+	
+#############################################################################
+# Tool ./gfe_memory_profiler.so
+gfe_memory_profiler.so: tools/memory_profiler.cpp
+	${CXX} $^ -std=c++17 -O3 -g -shared -fPIC -Wall -ldl -o $@
+
+#############################################################################
+# Tool ./bm
+bm: ${objectdir}/tools/bm.o ${dependencies} 
+	${CXX} $^ ${LDFLAGS} -o $@
+	
+${objectdir}/tools/bm.o: tools/bm.cpp | ${toolsdir}
+	${makedepend_cxx}
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@
+	
+#############################################################################
+# Tool ./edges_per_vertex
+edges_per_vertex: ${objectdir}/tools/edges_per_vertex.o ${dependencies} 
+	${CXX} $^ ${LDFLAGS} -o $@
+	
+${objectdir}/tools/edges_per_vertex.o: tools/edges_per_vertex.cpp | ${toolsdir}
+	${makedepend_cxx}
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@
+
+#############################################################################
+# Build directories
+${builddir} ${objectdirs} ${testbindir} ${toolsdir}:
+	mkdir -pv $@
+	
+#############################################################################
+# libcommon
+.PHONY: libcommon
+libcommon: ${libcommon}
+libcommon_path := third-party/libcommon
+libcommon_build_path := $(abspath ${builddir})/${libcommon_path}
+
+# `common' is the target name for the rule in the libcommon project
+${libcommon}: ${libcommon_build_path}
+	make -C $< common
+
+${libcommon_build_path}:
+	mkdir -pv $@
+	cd ${builddir}/third-party/libcommon && \
+		cmake -DBUILD_TEST=OFF -DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@ ${dependencies_cmake_flags} $(abspath ${srcdir})/third-party/libcommon
+
+${libbacktrace}: ${libcommon}
+
+#############################################################################
+# Remove everything from the current build
+.PHONY: clean
+clean:
+	rm -rf ${builddir}/gfe_client
+	rm -rf ${builddir}/gfe_server
+	rm -rf ${builddir}/gfe_driver
+	rm -rf ${builddir}/${archive}
+	rm -rf ${builddir}/${objectdir}
+	rm -rf ${builddir}/third-party/libcommon
+	rm -rf ${gtestdir}
+	rm -rf ${testbindir}
+	rm -f ${builddir}/bm
+	rm -f ${builddir}/edges_per_vertex
+	rm -f ${builddir}/gfe_memory_profiler.so
+	
+#############################################################################
+# Regenerate the Makefile when the configuration has been changed
+$(srcdir)/configure: configure.ac aclocal.m4
+	cd '$(srcdir)' && autoconf
+	
+config.status: configure
+	./config.status --recheck
+	
+Makefile: Makefile.in config.status
+	./config.status
+	
+#############################################################################
+# Dependencies to update the translation units if a header has been altered
+-include ${objects:.o=.d}
+-include "${objectdir}/tools/bm.d"
+-include "${objectdir}/tools/edges_per_vertex.d"

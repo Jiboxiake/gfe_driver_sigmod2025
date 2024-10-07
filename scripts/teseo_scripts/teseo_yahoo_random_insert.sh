@@ -1,0 +1,4 @@
+numactl -N 0 -l /home/zhou822/gfe_driver_bigdata/build/gfe_driver -G /home/zhou822/gfe_experiment_data/yahoo-song/out.yahoo-song.el -u -l teseo-lcc.13 -w 16 
+numactl -N 0 -l /home/zhou822/gfe_driver_bigdata/build/gfe_driver -G /home/zhou822/gfe_experiment_data/yahoo-song/out.yahoo-song.el -u -l teseo-lcc.13 -w 12 
+numactl -N 0 -l /home/zhou822/gfe_driver_bigdata/build/gfe_driver -G /home/zhou822/gfe_experiment_data/yahoo-song/out.yahoo-song.el -u -l teseo-lcc.13 -w 8 
+numactl -N 0 -l /home/zhou822/gfe_driver_bigdata/build/gfe_driver -G /home/zhou822/gfe_experiment_data/yahoo-song/out.yahoo-song.el -u -l teseo-lcc.13 -w 4 
