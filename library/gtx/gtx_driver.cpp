@@ -242,6 +242,7 @@ namespace gfe::library {
     }
 
     bool GTXDriver::add_edge_v2(gfe::graph::WeightedEdge edge){
+        //for the experiment comparing with sortledton and teseo, we just assume it has to be undirected.
         uint64_t internal_source_id = numeric_limits<uint64_t>::max();
         uint64_t internal_destination_id = 0;
         bool insert_source = false;
@@ -293,15 +294,16 @@ namespace gfe::library {
                 //tx.put_edge(internal_source_id, /* label */ 1, internal_destination_id, weight);
                 result = tx.checked_put_edge(internal_source_id, /* label */ 1, internal_destination_id, weight);
 
-                if(!m_is_directed&&result){
+                //commented because checked_put_edge covers both directions already
+                //if(!m_is_directed&&result){
                     // a) In directed graphs, we register the incoming edges with label 1
                     // b) In undirected graphs, we follow the same convention given by G. Feng, author
                     // of the LiveGraph paper, for his experiments in the LDBC SNB Person knows Person:
                     // undirected edges are added twice as a -> b and b -> a
                     //gt::label_t label = 1;
                     //tx.put_edge(internal_destination_id, /* label */ 1, internal_source_id, weight);
-                    result&=tx.checked_put_edge(internal_destination_id, /* label */ 1, internal_source_id, weight);
-                }
+                //    result&=tx.checked_put_edge(internal_destination_id, /* label */ 1, internal_source_id, weight);
+                //}
                 if(tx.commit()){
                     if(result)
                         m_num_edges++;
@@ -528,9 +530,11 @@ namespace gfe::library {
                 //    tx.delete_edge(internal_destination_id, /* label */ 1, internal_source_id);
                 //}
                 bool removed = tx.checked_delete_edge(internal_source_id, /* label */ 1, internal_destination_id);
-                if(removed && !m_is_directed){ // undirected graph
-                    removed&=tx.checked_delete_edge(internal_destination_id, /* label */ 1, internal_source_id);
-                }
+
+                //checked_delete_edge covers both directions already
+                //if(removed && !m_is_directed){ // undirected graph
+                //    removed&=tx.checked_delete_edge(internal_destination_id, /* label */ 1, internal_source_id);
+                //}
                 if(tx.commit()){
                    if(removed){
                        m_num_edges--;
