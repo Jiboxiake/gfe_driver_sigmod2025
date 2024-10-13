@@ -1,6 +1,6 @@
 [submodule "third-party/libcommon"]
 	path = third-party/libcommon
-	url = https://github.com/PerFuchs/libcommon
+	url = https://github.com/PerFuchs/libcommon.git
 	branch = master
 [submodule "third-party/perfevent"]
 	path = third-party/perfevent
