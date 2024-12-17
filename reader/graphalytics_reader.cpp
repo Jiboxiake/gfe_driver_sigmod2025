@@ -23,6 +23,8 @@
 #include <fstream>
 #include <regex>
 #include <zlib.h>
+#include <stdio.h> 
+#include <string.h>
 #include "common/filesystem.hpp"
 #include "graph/edge.hpp"
 #include "configuration.hpp"
