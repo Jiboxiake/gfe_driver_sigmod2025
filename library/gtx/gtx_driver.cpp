@@ -2252,10 +2252,10 @@ more consistent performance for undirected graphs.
 
     void GTXDriver::sssp(uint64_t source_vertex_id, const char* dump2file) {
         //std::cout<<"sssp running"<<std::endl;
-        uint64_t max_vertex_id = GTX->get_max_allocated_vid();
+        //uint64_t max_vertex_id = GTX->get_max_allocated_vid()+100000;
         uint64_t root = ext2int(source_vertex_id);
         //uint64_t root = 128;
-       auto handler = GTX->get_sssp_handler(max_vertex_id);
+       auto handler = GTX->get_sssp_handler(/*max_vertex_id*/);
         double delta = 2.0;
         //std::cout<<"before entering compute"<<std::endl;
         handler.compute(root,delta);
