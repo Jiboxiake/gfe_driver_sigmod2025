@@ -1,4 +1,8 @@
-for a in 10 15 20 25 30 35 40 45
+for a in 18 30 42 54
 do
-    numactl -N 1 -l /home/zhou822/gfe_driver_bw/build/gfe_driver -G /home/zhou822/gfe_experiment_data/graph_source/graph500-24.properties  -R 1 -u --log /home/zhou822/test_log/test0.graphlog --aging_timeout 24h -l sortledton.4 -w $a -r $((50- $a)) --blacklist sssp,pagerank,bfs,wcc,lcc --mixed_workload true --block_size 512
+    sudo sh -c 'echo 3 >  /proc/sys/vm/drop_caches'
+    numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/graph500/graph500-24.properties  -R 1 -u --log /home/zhou822/graph_source/test0.graphlog --aging_timeout 24h -l sortledton.4 -w $a -r $((60- $a)) --blacklist pagerank,sssp,bfs,wcc,lcc --mixed_workload true --block_size 512
+    echo
+    echo '***********************************************************'
+    echo
 done

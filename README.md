@@ -87,6 +87,7 @@ mkdir build && cd build
 
 #### GTX
 Currently we use the branch 'master' from 'https://anonymous.4open.science/r/gfe_driver_sigmod2025-1387/README.md' .
+If GFE_DRIVER is used to reproduce the experiments for billion-edges grahs, please change the [USING_BIGDATA] flag to true in ./core/graph_global.hpp.
 Follow the instruction in REAME to build GTX. After GTX has been built, configure the driver with:
 ```
 mkdir build && cd build

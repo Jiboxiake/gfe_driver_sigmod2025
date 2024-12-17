@@ -316,12 +316,12 @@ namespace gfe::library {
         } while(!done);
 
         if(insert_source){
-            assert(internal_source_id != numeric_limits<uint64_t>::max());
+            //assert(internal_source_id != numeric_limits<uint64_t>::max());
             xlock1->second = internal_source_id;
             m_num_vertices++;
         }
         if(insert_destination){
-            assert(internal_destination_id != numeric_limits<uint64_t>::max());
+            //assert(internal_destination_id != numeric_limits<uint64_t>::max());
             xlock2->second = internal_destination_id;
             m_num_vertices++;
         }
