@@ -6,7 +6,7 @@ GFE Driver
 
 The GFE (Graph Framework Evaluation) Driver is the program used to run the experiments in "GTX: A  Write-Optimized Latch-free Graph Data System with Transactional Support", measuring the throughput of updates in libraries supporting structural dynamic graphs and the completion times of 
 the [Graphalytics kernels](https://github.com/ldbc/ldbc_graphalytics) concurrently. 
-The driver supports the following systems: [GTX](https://anonymous.4open.science/r/gfe_driver_sigmod2025-1387/README.md), [Sortledton](https://gitlab.db.in.tum.de/per.fuchs/sortledton), [Teseo](https://github.com/cwida/teseo), 
+The driver supports the following systems: [GTX](https://anonymous.4open.science/r/GTX-SIGMOD2025-022D/README.md), [Sortledton](https://gitlab.db.in.tum.de/per.fuchs/sortledton), [Teseo](https://github.com/cwida/teseo), 
 [LLAMA](https://github.com/goatdb/llama), [GraphOne](https://github.com/the-data-lab/GraphOne), 
 [Stinger](http://stingergraph.com/) and [LiveGraph](https://github.com/thu-pacman/LiveGraph-Binary) while we ran our experiments only for systems that support concurrent reads and writes under transactions (GTX, Sortledton, Teseo, and LiveGraph).
 It can run four kinds of experiments: insert all edges in a random permuted order or timestamp-based order from an input graph, execute the updates specified by a [graphlog file](https://github.com/whatsthecraic/graphlog), run the kernels of the Graphalytics suite: BFS, PageRank (PR), weighted shortest paths (SSSP), and concurrently execute updates and graph analytics.  
@@ -86,7 +86,7 @@ mkdir build && cd build
 ```
 
 #### GTX
-Currently we use the branch 'master' from 'https://anonymous.4open.science/r/gfe_driver_sigmod2025-1387/README.md' .
+Currently we use the branch 'master' from 'https://anonymous.4open.science/r/GTX-SIGMOD2025-022D/README.md' .
 If GFE_DRIVER is used to reproduce the experiments for billion-edges grahs, please change the [USING_BIGDATA] flag to true in ./core/graph_global.hpp.
 Follow the instruction in REAME to build GTX. After GTX has been built, configure the driver with:
 ```
@@ -106,12 +106,12 @@ If in the mood of running the testsuite, type `make check -j`.
 
 In our experiments, we used the following input graphs and data sets:
 
-- `dota-league` and `graph500-SF`, with `SF` in {22, 24, 26} and `com-friendster`, were taken from the [official Graphalytics collection](https://www.graphalytics.org/datasets).
+- `dota-league` and `graph500-SF`, with `SF` in {22, 24, 26} were taken from the [official Graphalytics collection](https://www.graphalytics.org/datasets).
 - `uniform-SF`, with `SF` in {22, 24, 26} were generated with an [ad-hoc tool](https://github.com/whatsthecraic/uniform_graph_generator). These are synthetic graphs having the same number of vertices and edges of `graph500-SF`, but a uniform node degree distribution.
 - The logs for the experiments with updates, i.e. with both insertions and deletions,
   were generated with another [ad-hoc tool](https://github.com/whatsthecraic/graphlog). 
-- `yahoo-songs` and `edit-enwiki` were taken from the [Konect webpage](http://konect.cc/networks/) they were prepared 
-  for our experiments by sorting them by timestamp and removing duplicates by using `tools/timestampd_graph_2_edge_list.py`.  
+- `yahoo-songs`, `edit-enwiki` and 'twitter' were taken from the [Konect webpage](http://konect.cc/networks/) they were prepared 
+  for our experiments by sorting them by timestamp (`yahoo-songs` and `edit-enwiki`) and removing duplicates (all 3 datasets) by using `tools/timestampd_graph_2_edge_list.py`.  
 
 A complete image of all datasets used in the experiments can be downloaded from Zenodo: [input graphs](https://zenodo.org/record/3966439),
 [graph logs](currently unavailable due to anonymity but we generated them from https://github.com/whatsthecraic/graphlog), and [timestamped graphs](https://zenodo.org/record/5752476).
