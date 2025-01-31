@@ -94,6 +94,7 @@ class Configuration {
     size_t m_block_size = 1024;  // Block size for Sortledton to use
     bool m_is_mixed_workload = false;
     bool m_is_timestamped_graph = false;
+    bool m_track_memory = false;
 
     void set_aging_cooloff_seconds(uint64_t value);
     void set_aging_memfp_threshold(uint64_t bytes);
@@ -112,6 +113,7 @@ class Configuration {
     void set_graph(const std::string& graph); // Set the graph to load and run the experiments
     void set_block_size(size_t block_size);
     void set_is_timestamped(bool timestamped);
+    void set_track_memory(bool track);
 
     // Set the path to the database
     void set_database_path(const std::string& path){ m_database_path = path; }
@@ -244,6 +246,8 @@ public:
     bool is_mixed_workload() const;
 
     bool is_timestamped_graph() const;
+
+    bool track_memory() const;
 };
 
 } // namespace

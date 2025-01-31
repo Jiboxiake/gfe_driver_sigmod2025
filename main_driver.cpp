@@ -250,9 +250,11 @@ static void run_standalone(int argc, char* argv[]){
         exp_seq.execute();
         exp_seq.report(configuration().has_database());
     }
-    struct rusage usage;
-    getrusage(RUSAGE_SELF, &usage);
-    std::cout << "Memory used: " << usage.ru_maxrss << " KB" << std::endl;
+    if(configuration().track_memory()){
+        struct rusage usage;
+        getrusage(RUSAGE_SELF, &usage);
+        std::cout << "Memory used: " << usage.ru_maxrss << " KB" << std::endl;
+    }
     LOG( "[driver] Done" );
 }
 

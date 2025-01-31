@@ -128,6 +128,7 @@ void Configuration::initialise(int argc, char* argv[]){
         ("b, block_size", "The block size for Sortledton to use.", value<int>()->default_value("1024"))
         ("m, mixed_workload", "If set run updates and analytics concurrently.", value<bool>()->default_value("false"))
         ("is_timestamped", "If the graph log is sorted by external timestamps and should not be shuffled.", value<bool>()->default_value("false"))
+        ("track_total_memory", "Track the total memory used by the experiment program", value<bool>()->default_value("false"))
     ;
 
     try {
@@ -315,6 +316,10 @@ void Configuration::initialise(int argc, char* argv[]){
           set_is_timestamped( result["is_timestamped"].as<bool>() );
         }
 
+        if(result["track_total_memory"].count() > 0 ){
+          set_track_memory( result["track_total_memory"].as<bool>() );
+        }
+
     } catch ( argument_incorrect_type& e){
         ERROR(e.what());
     }
@@ -434,8 +439,16 @@ void Configuration::set_is_timestamped(bool timestamped) {
   m_is_timestamped_graph = timestamped;
 }
 
+void Configuration::set_track_memory(bool track){
+    m_track_memory = track;
+}
+
 bool Configuration::is_timestamped_graph() const {
   return m_is_timestamped_graph;
+}
+
+bool Configuration::track_memory() const {
+    return m_track_memory;
 }
 
 uint64_t Configuration::get_num_recordings_per_ops() const {
