@@ -110,11 +110,11 @@ In our experiments, we used the following input graphs and data sets:
 - `uniform-SF`, with `SF` in {22, 24, 26} were generated with an [ad-hoc tool](https://github.com/whatsthecraic/uniform_graph_generator). These are synthetic graphs having the same number of vertices and edges of `graph500-SF`, but a uniform node degree distribution.
 - The logs for the experiments with updates, i.e. with both insertions and deletions,
   were generated with another [ad-hoc tool](https://github.com/whatsthecraic/graphlog). 
-- `yahoo-songs`, `edit-enwiki` and 'twitter' were taken from the [Konect webpage](http://konect.cc/networks/) they were prepared 
+- `yahoo-songs`, `edit-enwiki` and `twitter` were taken from the [Konect webpage](http://konect.cc/networks/) they were prepared 
   for our experiments by sorting them by timestamp (`yahoo-songs` and `edit-enwiki`) and removing duplicates (all 3 datasets) by using `tools/timestampd_graph_2_edge_list.py`.  
 
-A complete image of all datasets used in the experiments can be downloaded from Zenodo: [input graphs](https://zenodo.org/record/3966439),
-[graph logs](https://github.com/Jiboxiake/graphlog), and [timestamped graphs](https://zenodo.org/record/5752476).
+A complete image of all datasets used in the experiments can be downloaded from the following sources: [input graphs](https://zenodo.org/record/3966439),
+[graph logs](https://purdue0-my.sharepoint.com/:f:/g/personal/zhou822_purdue_edu/EiBWFr3Ah_JEjjebIEwxtfsB9k_QF8WWmWTFhOuC1S77VQ?e=AqAJGY), and [timestamped graphs](https://zenodo.org/record/5752476).
 
 ### Executing the driver
 
@@ -126,17 +126,18 @@ There are four kinds of experiments that can be executed:
 
 Insert in a random order:
 ```
-./gfe_driver -G /path/to/input/graph.properties -u -l <system_to_evaluate> -w <num_threads> -d output_results.sqlite3 --is_timestamped true
+./gfe_driver -G /path/to/input/graph.properties -u -l <system_to_evaluate> -w <num_threads>
+
 ```
 Insert in a timestamp-based order:
 ```
-./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> -d output_results.sqlite3
+./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> --is_timestamped true
 ```
 
 - **Updates**: perform all insertions and deletions from a log. Add the option --log /path/to/updates.graphlog:
 
 ```
-./gfe_driver -G /path/to/input/graph.properties -u --log /path/to/updates.graphlog --aging_timeout 24h -l <system_to_evaluate> -w <num_threads> -d output_results.sqlite3
+./gfe_driver -G /path/to/input/graph.properties -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads>
 ```
 
 - **Graphalytics**: execute kernels from the Graphalytics suite. Add the option `-R <N>` to repeat `N` times the execution of Graphalytics kernel(s) one by one. E.g., to run the BFS, PageRank and single source shortest path (SSSP) five times, after all vertices and edges have been inserted, use:
@@ -144,11 +145,18 @@ Insert in a timestamp-based order:
 ```
 ./gfe_driver -G /path/to/input/graph.properties -u -l <system_to_evaluate> -w <num_threads> -R 5 -d output_results.sqlite3 --blacklist cdlp,wcc,lcc
 ```
+For our paper, we did not separately conduct Graphalytics-only experiments but include them as part of the concurrent read-write experiments.
 
-- **Concurrent read-write mixed**: execute the updates experiment and concurrently run graph analytics. We currently support concurrent graph topology scan, graph property scan, BFS, and PageRank. We subsitute CDLP and WCC with graph topology scan and property scan. For example, to execute updates from logs and concurrently run PageRank, run:
+- **Concurrent mixed read-write**: execute the updates experiment and concurrently run graph analytics. We currently support concurrent graph topology scan, graph property scan, BFS, and PageRank. We subsitute CDLP and WCC with graph topology scan and property scan. For example, to execute updates from logs and concurrently run PageRank, run:
 
 ```
-./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog --aging_timeout 24h -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true
+./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true
+```
+
+- **Memory Usage**: measure the total memory usage of the graph insertion, graph update, and concurrent mixed read-write experiments in KBs. For the graph insert experiments, we measured the total memory usage using 32 worker threads. For the mixed-workload experiment, we measured the memory usage using 30 reader threads and 30 writer threads (50% balanced workload). For the experiments, run:
+```
+./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> --track_memory true
+./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true --track_memory true
 ```
 
 Type `./gfe_driver -h` for the full list of options and for the libraries that can be evaluated (option `-l`). The driver spawns the number of threads given by the option `-w` to concurrently run all insertions or updates. For Graphalytics, it defaults to the total number of the physical threads in the machine. This setting can be changed with the option `-r <num_threads>`. Note that the numbers
