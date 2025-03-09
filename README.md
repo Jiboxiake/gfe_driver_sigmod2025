@@ -147,7 +147,7 @@ Insert in a timestamp-based order:
 ```
 For our paper, we did not separately conduct Graphalytics-only experiments but include them as part of the concurrent read-write experiments.
 
-- **Concurrent mixed read-write**: execute the updates experiment and concurrently run graph analytics. We currently support concurrent graph topology scan, graph property scan, BFS, and PageRank. We subsitute CDLP and WCC with graph topology scan and property scan. For example, to execute updates from logs and concurrently run PageRank, run:
+- **Concurrent mixed read-write**: execute the updates experiment and concurrently run graph analytics. We currently support concurrent graph topology scan, graph property scan, BFS, and PageRank. We subsitute CDLP and WCC with 1-hop and 2-hop neighbors. For example, to execute updates from logs and concurrently run PageRank, run:
 
 ```
 ./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true
