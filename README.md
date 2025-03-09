@@ -158,6 +158,8 @@ For our paper, we did not separately conduct Graphalytics-only experiments but i
 ./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> --track_memory true
 ./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true --track_memory true
 ```
+### All Experiment Scripts
+All our scripts used in the Experiment Evaluation section of our paper "GTX: A  Write-Optimized Latch-free Graph Data System with Transactional Support" can be found at [/scripts/]. All graph insertion experiment scripts for each evaluated system can be found at the directory with the same name. For example, all GTX graph insertion experiment scripts are found at [/scripts/gtx_scripts]. All mixed-workload experiment scripts are found under [/scripts/mixed_percentage_workload] and memory measurement scripts are found under [/scripts/mixed_percentage_workload/memory_experiment].
 
 Type `./gfe_driver -h` for the full list of options and for the libraries that can be evaluated (option `-l`). The driver spawns the number of threads given by the option `-w` to concurrently run all insertions or updates. For Graphalytics, it defaults to the total number of the physical threads in the machine. This setting can be changed with the option `-r <num_threads>`. Note that the numbers
 in the library codes (e.g. teseo.**6**, stinger**3**) are unrelated to the versions of the systems evaluated, they were only used

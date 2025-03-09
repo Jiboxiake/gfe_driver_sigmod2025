@@ -1,6 +1,0 @@
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/graph500/graph500-24.properties -u -l sortledton.4 -w 72 --block_size 512
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/yahoo-song/out.yahoo-song.el -u -l sortledton.4 -w 72 --block_size 512 --is_timestamped true
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/yahoo-song/out.yahoo-song.el -u -l sortledton.4 -w 72 --block_size 512
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/edit-enwiki/out.edit-enwiki.el -u -l sortledton.4 -w 72 --block_size 512 --is_timestamped true
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/edit-enwiki/out.edit-enwiki.el -u -l sortledton.4 -w 72 --block_size 512
-numactl -N 1 -l /home/zhou822/gfe_driver_sigmod2025/build/gfe_driver -G /ssd_root/zhou822/graph_source/graph500/graph500-24.properties -u -l sortledton.4 -w 72 --block_size 512
