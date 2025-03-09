@@ -165,8 +165,6 @@ Type `./gfe_driver -h` for the full list of options and for the libraries that c
 in the library codes (e.g. teseo.**6**, stinger**3**) are unrelated to the versions of the systems evaluated, they were only used
 internally for development purposes.
 
-The database `output_results.sqlite3` will contain the final results. Refer to [this repository](https://github.com/whatsthecraic/gfe_notebooks) to see how to load and inspect the data within Jupyter notebooks. In our paper  "GTX: A  Write-Optimized Latch-free Graph Data System with Transactional Support", we did not use the notebook but generated the figures directly from the experiment output.
-All scripts of running the experiments mentioned in the paper can be found at [/scripts/] . We also implemented a mixed workload of updates and transactional single edge reads but did not include it in the paper. It is implemented as a variance of the update experiment and can be found at [/experiment/details/].
 
 
 
