@@ -68,7 +68,7 @@ In our experiments, we used the following input graphs and data sets:
 A complete image of all datasets used in the experiments can be downloaded from the following sources: [input graphs](https://zenodo.org/record/3966439),
 [graph logs](https://purdue0-my.sharepoint.com/:f:/g/personal/zhou822_purdue_edu/EiBWFr3Ah_JEjjebIEwxtfsB9k_QF8WWmWTFhOuC1S77VQ?e=AqAJGY), and [timestamped graphs](https://zenodo.org/record/5752476).
 
-### Executing the driver
+### Executing the driver with GTX
 
 
 The driver takes as input a list of options together with a graph, and emits the results into a sqlite3 database. It also prints out the results to console.
@@ -78,37 +78,37 @@ There are four kinds of experiments that can be executed:
 
 Insert in a random order:
 ```
-./gfe_driver -G /path/to/input/graph.properties -u -l <system_to_evaluate> -w <num_threads>
+./gfe_driver -G /path/to/input/graph.properties -u -l gtx_rw -w <num_threads>
 
 ```
 Insert in a timestamp-based order:
 ```
-./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> --is_timestamped true
+./gfe_driver -G /path/to/input/graph.el -u -l gtx_rw -w <num_threads> --is_timestamped true
 ```
 
 - **Updates**: perform all insertions and deletions from a log. Add the option --log /path/to/updates.graphlog:
 
 ```
-./gfe_driver -G /path/to/input/graph.properties -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads>
+./gfe_driver -G /path/to/input/graph.properties -u --log /path/to/updates.graphlog -l gtx_rw -w <num_threads>
 ```
 
 - **Graphalytics**: execute kernels from the Graphalytics suite. Add the option `-R <N>` to repeat `N` times the execution of Graphalytics kernel(s) one by one. E.g., to run the BFS, PageRank and single source shortest path (SSSP) five times, after all vertices and edges have been inserted, use:
 
 ```
-./gfe_driver -G /path/to/input/graph.properties -u -l <system_to_evaluate> -w <num_threads> -R 5 -d output_results.sqlite3 --blacklist cdlp,wcc,lcc
+./gfe_driver -G /path/to/input/graph.properties -u -l gtx_rw -w <num_threads> -R 5 -d output_results.sqlite3 --blacklist cdlp,wcc,lcc
 ```
 For our paper, we did not separately conduct Graphalytics-only experiments but include them as part of the concurrent read-write experiments.
 
 - **Concurrent mixed read-write**: execute the updates experiment and concurrently run graph analytics. We currently support concurrent graph topology scan, graph property scan, BFS, and PageRank. We subsitute CDLP and WCC with 1-hop and 2-hop neighbors. For example, to execute updates from logs and concurrently run PageRank, run:
 
 ```
-./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true
+./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l gtx_rw -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true
 ```
 
 - **Memory Usage**: measure the total memory usage of the graph insertion, graph update, and concurrent mixed read-write experiments in KBs. For the graph insert experiments, we measured the total memory usage using 32 worker threads. For the mixed-workload experiment, we measured the memory usage using 30 reader threads and 30 writer threads (50% balanced workload). For the experiments, run:
 ```
-./gfe_driver -G /path/to/input/graph.el -u -l <system_to_evaluate> -w <num_threads> --track_memory true
-./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l <system_to_evaluate> -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true --track_memory true
+./gfe_driver -G /path/to/input/graph.el -u -l gtx_rw -w <num_threads> --track_memory true
+./gfe_driver -G /path/to/input/graph.properties  -R 3 -u --log /path/to/updates.graphlog -l gtx_rw -w <num_threads> -r <num_reader_threads> --blacklist sssp,cdlp,bfs,wcc,lcc --mixed_workload true --track_memory true
 ```
 ### All Experiment Scripts
 All our scripts used in the Experiment Evaluation section of our paper "GTX: A  Write-Optimized Latch-free Graph Data System with Transactional Support" can be found at [/scripts/]. All graph insertion experiment scripts for each evaluated system can be found at the directory with the same name. For example, all GTX graph insertion experiment scripts are found at [/scripts/gtx_scripts]. All mixed-workload experiment scripts are found under [/scripts/mixed_percentage_workload] and memory measurement scripts are found under [/scripts/mixed_percentage_workload/memory_experiment].
